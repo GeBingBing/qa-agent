@@ -68,7 +68,7 @@
 | P2-3 | ✅ | request_id 中间件 + JSON 行日志（`KB_QA_LOG_JSON=1` 启用；ContextVar 串联 logger/tracer） | `backend/kb_qa_agent/observability/{logging_setup,request_id_middleware}.py` |
 | P2-4 | ✅ | trace PII 屏蔽（`redact.py`：剥离 `<think>`、屏蔽 sk-*、Bearer token、超长截断） | `backend/kb_qa_agent/observability/{redact,tracer}.py` |
 | P2-5 | ✅ | `/metrics` Prometheus + `/health/ready` 真实探测 | `backend/kb_qa_agent/{observability/metrics.py,api/health.py}` |
-| P2-6 | ⏳ | 可选 OTel exporter — 保留为可选钩子（`pyproject.toml` 已含 `opentelemetry-api`） | — |
+| P2-6 | ✅ | 可选 OTel exporter — `OTEL_EXPORTER_OTLP_ENDPOINT` 设置时 lifespan 自动注册 TracerProvider + BatchSpanProcessor + OTLPSpanExporter；SDK 缺失则降级 + warning | `backend/kb_qa_agent/observability/otel.py`、`main.py`、`.env.example` |
 | P2-7 | ✅ | 测试补齐：cost / reflection / cors / security / metrics / redact / request_id 七套新测试 | `backend/tests/test_*.py` |
 | P2-8 | ✅ | golden_qa 新增 q021/q022/q023 三条 `expected_risk=high` | `backend/eval/golden_qa.jsonl` |
 

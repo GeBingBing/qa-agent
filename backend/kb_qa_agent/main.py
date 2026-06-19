@@ -18,6 +18,7 @@ from .api import health as health_api
 from .config import get_config, reset_config_cache
 from .domains import bootstrap as bootstrap_domains
 from .observability.logging_setup import install_logging
+from .observability.otel import install_otel_if_enabled
 from .observability.request_id_middleware import RequestIdMiddleware
 from .providers import configure_agently_for_active_provider, list_available
 
@@ -56,6 +57,9 @@ async def lifespan(_app: FastAPI):
     # 共享 RAG 单例（embedding 模型加载昂贵，避免每请求重建）
     from .core.rag import RAG
     _app.state.rag = RAG()
+
+    # 可选：当 OTEL_EXPORTER_OTLP_ENDPOINT 被设置时启用 OTel exporter
+    install_otel_if_enabled()
 
     yield
 
