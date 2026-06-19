@@ -1,0 +1,36 @@
+{
+  "expense_policies": {
+    "travel": {
+      "category": "差旅",
+      "per_diem_cny": 400,
+      "hotel_cap_cny": 600,
+      "flight_class": "economy",
+      "approval_threshold_cny": 5000,
+      "notes": "国内差旅；国际差旅需提前 7 天申请，酒店上限上调至 1200 元/晚。"
+    },
+    "meals": {
+      "category": "餐饮",
+      "lunch_cap_cny": 80,
+      "dinner_cap_cny": 120,
+      "team_dinner_cap_cny_per_person": 200,
+      "approval_threshold_cny": 1000,
+      "notes": "团队晚餐人均 ≤ 200 元；超过 1000 元需总监审批。"
+    },
+    "office_supplies": {
+      "category": "办公用品",
+      "monthly_cap_cny": 500,
+      "approval_threshold_cny": 1500,
+      "notes": "月度预算 500 元/人；超过 1500 元需走 IT 资产采购流程。"
+    }
+  },
+  "budgets": {
+    "engineering": {"fy2026_total_cny": 5000000, "used_cny": 1250000, "remaining_cny": 3750000},
+    "marketing":    {"fy2026_total_cny": 3000000, "used_cny": 1800000, "remaining_cny": 1200000},
+    "finance":      {"fy2026_total_cny": 800000,  "used_cny": 120000,  "remaining_cny": 680000}
+  },
+  "payments": [
+    {"id": "P001", "vendor": "AWS 中国", "amount_cny": 184320, "status": "paid", "date": "2026-04-30"},
+    {"id": "P002", "vendor": "JetBrains", "amount_cny": 12800, "status": "pending", "date": "2026-06-12"},
+    {"id": "P003", "vendor": "高铁购票", "amount_cny": 3450, "status": "paid", "date": "2026-05-22"}
+  ]
+}

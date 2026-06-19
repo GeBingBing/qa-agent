@@ -1,0 +1,95 @@
+# =============================================================================
+# kb-qa-agent — Runtime SETTINGS
+# =============================================================================
+# 工程骨架惯例：把"业务可调参数"放进 YAML，
+# 用 ${ENV.*} 占位符引用 .env，避免硬编码。这里集中维护。
+# =============================================================================
+
+app:
+  name: "kb-qa-agent"
+  version: "0.1.0"
+  active_provider: "${ENV.KB_QA_ACTIVE_PROVIDER}"
+  active_model: "${ENV.KB_QA_ACTIVE_MODEL}"
+
+# --------- LLM Defaults per Provider ---------
+providers:
+  deepseek:
+    api_key: "${ENV.DEEPSEEK_API_KEY}"
+    base_url: "${ENV.DEEPSEEK_BASE_URL}"
+    default_model: "${ENV.DEEPSEEK_DEFAULT_MODEL}"
+  openai:
+    api_key: "${ENV.OPENAI_API_KEY}"
+    base_url: "${ENV.OPENAI_BASE_URL}"
+    default_model: "${ENV.OPENAI_DEFAULT_MODEL}"
+  opus:
+    api_key: "${ENV.ANTHROPIC_API_KEY}"
+    base_url: "${ENV.ANTHROPIC_BASE_URL}"
+    default_model: "${ENV.ANTHROPIC_DEFAULT_MODEL}"
+  kimi:
+    api_key: "${ENV.KIMI_API_KEY}"
+    base_url: "${ENV.KIMI_BASE_URL}"
+    default_model: "${ENV.KIMI_DEFAULT_MODEL}"
+  glm:
+    api_key: "${ENV.GLM_API_KEY}"
+    base_url: "${ENV.GLM_BASE_URL}"
+    default_model: "${ENV.GLM_DEFAULT_MODEL}"
+  dashscope:
+    api_key: "${ENV.DASHSCOPE_API_KEY}"
+    base_url: "${ENV.DASHSCOPE_BASE_URL}"
+    default_model: "${ENV.DASHSCOPE_DEFAULT_MODEL}"
+  minimax:
+    api_key: "${ENV.MINIMAX_API_KEY}"
+    base_url: "${ENV.MINIMAX_BASE_URL}"
+    default_model: "${ENV.MINIMAX_DEFAULT_MODEL}"
+
+# --------- MCP ---------
+mcp:
+  amap:
+    url: "${ENV.AMAP_MCP_URL}"
+  internal_mock:
+    url: "${ENV.INTERNAL_MCP_URL}"
+
+# --------- Vector DB / RAG ---------
+rag:
+  chroma:
+    persist_dir: "${ENV.CHROMA_PERSIST_DIR}"
+    collection: "${ENV.CHROMA_COLLECTION}"
+  embedding:
+    provider: "${ENV.EMBEDDING_PROVIDER}"
+    model: "${ENV.EMBEDDING_MODEL}"
+
+# --------- Domains ---------
+domains:
+  enabled: ["hr", "finance", "it", "legal"]
+  # 每个 domain 暴露给 agent 的工具上限（防 prompt 爆栈）
+  max_tools_per_domain: 12
+
+# --------- Skills ---------
+skills:
+  base_dir: "./backend/kb_qa_agent/skills"
+  trust:
+    install_sources:
+      builtin: "trusted"
+      marketplace: "review"
+      local: "trusted"
+      third_party: "blocked"
+
+# --------- Sandbox ---------
+sandbox:
+  workdir: "${ENV.KB_QA_SANDBOX_WORKDIR}"
+  timeout: "${ENV.KB_QA_SANDBOX_TIMEOUT}"
+  allowed_cmd_prefixes: "${ENV.KB_QA_SANDBOX_ALLOWED_CMD_PREFIXES}"
+
+# --------- Observability ---------
+observability:
+  trace:
+    dir: "${ENV.KB_QA_TRACE_DIR}"
+    level: "${ENV.KB_QA_TRACE_LEVEL}"
+  cost:
+    report_path: "${ENV.KB_QA_COST_REPORT_PATH}"
+
+# --------- API ---------
+api:
+  host: "${ENV.KB_QA_API_HOST}"
+  port: "${ENV.KB_QA_API_PORT}"
+  cors_origins: "${ENV.KB_QA_CORS_ORIGINS}"

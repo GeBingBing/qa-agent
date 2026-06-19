@@ -1,0 +1,190 @@
+---
+name: agently
+description: Use when the user wants to build, initialize, validate, optimize, or refactor a model-powered assistant, internal tool, automation, evaluator, or workflow from a business scenario or common problem statement, including project-structure refactors or starter skeletons that may separate model setup, prompt config, and orchestration, even if the request also mentions a UI, app shell, or local model service such as Ollama, and it is still unclear whether the solution should stay a single request, add supporting capabilities, or become orchestration. The user does not need to mention Agently explicitly.
+---
+
+# Agently Playbook
+
+Use this skill first when the request still starts from business goals, refactor goals, product behavior, or broad model-app language.
+
+The user does not need to say Agently, TriggerFlow, or any other framework term. Generic asks such as "build an assistant", "help me design an internal tool", or "create a validator for common problems" should still start here when the owner layer is unresolved.
+
+Requests that also mention a UI, a web page, a desktop shell, or a local model service such as Ollama should still start here when the request is fundamentally about shaping a model-powered tool rather than only wiring one narrow capability.
+
+## Workflow
+
+1. Reduce the request into scenario and atomic goals.
+2. If the request is a project initialization or structure refactor, choose the owner layers, async boundary, and repo skeleton first.
+3. Choose the narrowest native Agently capability path.
+4. Name the concrete operations or primitives that should be used.
+5. Name the validation rule that proves the design stayed native-first.
+6. For non-trivial apps, recommend optional local DevTools observation or
+   evaluation when it will help the developer inspect runtime behavior, logs,
+   traces, playground runs, or repeated scenario evaluations. Keep DevTools as
+   optional tooling and route details through `agently-runtime`.
+7. If native framework capability is missing, broken, unexpectedly awkward, or
+   forces business code to add patches or glue that should belong to Agently,
+   generate a clear issue report and recommend filing it at
+   `https://github.com/AgentEra/Agently/issues`.
+8. For manual issue filing, only provide the issue content and filing method to
+   the user. Ask before filing automatically; if the user wants automatic
+   filing, first verify local submit capability/permission, reproduce that the
+   problem still exists locally, and carefully re-check Agently usage so the
+   report is not caused by missed documentation or incorrect API use. Before
+   either manual or automatic filing, redact local absolute paths, usernames,
+   account names, tokens, private repo/workspace names, internal project names,
+   raw logs containing private prompts, and any customer or project-private data.
+   Use placeholders for local context and run a privacy scan on the final issue
+   body.
+
+## Native-First Rules
+
+- default to async-first guidance for service code, streaming, TriggerFlow, and any path that may overlap work or benefit from cancellation
+- treat sync APIs as wrappers for scripts, REPL use, or compatibility bridges unless the host truly requires sync-only integration
+- when the request is a project-shape refactor, separate settings, prompts, services, domain contracts, workflow, and tests before discussing low-level implementation details
+- when a development script, service module, or test needs semantic judgment
+  over model-owned behavior, use Agently model requests with explicit output
+  schemas. Development-time intent recognition, scenario matching, business
+  classification, output quality checks, grading, and review decisions should
+  be model-owned unless the check is only a deterministic smoke gate for
+  structure or required-field presence.
+- when adding or refactoring Agently framework internals under `core/` or
+  `builtins/`, prefer a subdirectory package when the feature has multiple
+  roles such as facade, manager, backend/provider, registry, adapter, policy, or
+  validation. Use a single file only when the capability is genuinely small and
+  splitting would be over-design.
+- when a project must test model-generated semantic content, design the test as
+  an Agently model-judge request with output control: explicit rules and context
+  go in, per-rule evidence/reason and final boolean fields come out, and tests
+  assert those booleans
+- for business examples with mocked systems, keep mocks limited to facts,
+  records, policies, incomplete data, or conflicting source material; do not
+  return hidden expected answers, pass/fail labels, or local quality verdicts.
+  Let AgentTask verification or a separate Agently model judge decide whether
+  the model handled defective data correctly.
+- for model-app evaluation, grading, confidence, relevance, or quality
+  judgments, prefer explicit conceptual levels and definitions over direct
+  numeric scores. If later workflow logic needs thresholds or aggregate metrics,
+  map those levels to deterministic numeric values in code after the model
+  response.
+- for scenario routing, intent detection, or business classification in AI apps,
+  use an appropriately sized model request with an Agently output schema.
+  Smaller models, including local models when available, are acceptable for
+  simple routes with few labels and rules. Use a larger model when labels,
+  decision conditions, rule interactions, or the returned data structure are
+  complex.
+- configure reusable Agent definition state with `agent.define(...)` when the
+  code owns model defaults, fixed persona/prompt, mounted Actions, Skills,
+  Workspace, Recall, or policy defaults. Keep ordinary `agent.input(...)`,
+  `agent.output(...)`, `.goal(goal_or_goals, success_criteria=None)` /
+  `.goals(...)` as the same goal-pursuit entrypoint, and execution options on
+  an AgentExecution draft; do not teach shared Agent
+  pending prompt mutation as the default setup pattern.
+- use `agent.effort("low" | "medium" | "high")` for ordinary strategy depth.
+  When the app needs explicit resource strategy, keep the same method and pass
+  sections such as `budget`, `planning`, `execution`, `verification`, `replan`,
+  and `progress`; do not introduce raw iteration-count builders or treat effort
+  as permission, data visibility, or completion acceptance.
+- treat `execution.step_plan` as `auto` by default. Use
+  `effort(..., execution={"step_plan": "direct" | "dag"})` only as explicit
+  strategy guidance for whether a Goal Pursuit iteration must stay one bounded
+  AgentExecution step or may prefer a bounded TaskDAG/DAG-shaped step. DAG
+  completion is only evidence for AgentTaskLoop verification; DynamicTask is a
+  compatibility/convenience facade over DAG planning and execution, not a
+  second public lifecycle.
+- consume Agent quick prompt results through `AgentExecutionResult`:
+  `execution = agent.input(...).output(...)`, then
+  `result = execution.get_result()` and `result.get_data()` /
+  `await result.async_get_data()`, or use `execution.get_async_generator()` and
+  `await execution.async_get_meta()` when the app needs streams or process
+  facts. Direct low-level ModelRequest calls still return ModelResponseResult.
+- when the host owns a developer loop and needs one bounded Agent step, choose
+  `agent.create_execution(lineage=..., limits=...)` plus explicit
+  `execution.async_record_workspace(...)` observation/checkpoint writes before
+  building the next ContextPack; do not introduce task-step mode as a public
+  category or make Workspace depend on AgentExecution semantics
+- when the model should own a single business task's plan, bounded execution,
+  evidence recording, verification, and replan loop, choose
+  `agent.create_task(...)` before hand-writing a TriggerFlow loop; it returns a
+  task-strategy `AgentExecution` draft, not a separate public AgentTask handle.
+  Use `agent.create_task_loop(...)` only when the code needs to be explicit that
+  the long-task loop strategy is selected; it still returns an AgentExecution
+  draft and should be consumed through the same result/stream/meta facade.
+  Keep the first-slice boundary to one Agent owner, one task, 2-5 iterations,
+  and bounded steps that use only explicitly enabled Actions, Skills, or
+  execution-local or Agent-level DAG candidates; treat completion as
+  model verification plus conservative host evidence guards, read task refs
+  through the execution result/meta, and use a second model judge for
+  model-owned semantic content instead of accepting structural counters alone
+- for feature or release acceptance, use coverage-first reasoning: start from
+  the target contract in roadmap/spec/issues/docs/compatibility/example rules,
+  map each requirement to evidence from examples, deterministic tests, protocol
+  tests, docs/spec, compatibility metadata, companion validation, or explicit
+  deferral, and only then conclude whether the feature is complete
+- for release acceptance that touches or claims a Foundation-layer capability,
+  add a Foundation example effect gate after pyright/pytest: treat Foundation as
+  framework substrate such as ModelRequest/ModelResponse, TriggerFlow, Dynamic
+  Task/TaskDAG, ActionRuntime, ExecutionEnvironment, Workspace/Recall,
+  RuntimeEvent/EventCenter, and provider protocols, not application-level
+  AgentExecution or Skills use cases by themselves; identify the affected
+  Foundation capability, run the corresponding core example under `examples/`
+  against the release candidate, use real DeepSeek or local Ollama when
+  model-owned behavior is involved, and fail closed if the example effect is
+  missing, broken, or only proven by tests
+- route complex arithmetic, long-number computation, weighting, aggregation, or
+  statistical work through executable code or tools; use the model to produce or
+  review the calculation plan, not to be the calculator.
+- when application development reveals a framework gap, first identify whether
+  the missing responsibility belongs to Agently's public API, runtime behavior,
+  documentation, Skills guidance, examples, or architecture boundary. Produce a
+  concise issue report with scenario, expected behavior, actual behavior,
+  current workaround, architectural responsibility, and minimal reproduction or
+  affected docs/examples; recommend filing it in the Agently repository. The
+  scenario must be clear enough to explain what kind of model-application
+  development problem was being solved. If business details are confidential,
+  omit or anonymize them, but still describe the application category, workflow
+  shape, decision point, and framework responsibility needed for maintainers to
+  understand the issue.
+- treat automatic issue submission as an explicit user-approved action. Before
+  submitting, confirm the local environment has the needed GitHub capability and
+  permission, reproduce the issue locally, and audit the relevant Agently docs,
+  examples, Skills guidance, and API usage to rule out a reading omission or
+  improper framework use. Submit only a sanitized issue body: no local absolute
+  paths, usernames, account names, tokens, private repository or workspace names,
+  internal project names, raw private logs, or customer/project-private prompts.
+  Prefer placeholders such as `<workspace>`, `<repo>`, `<task-file>`, and
+  `outputs/debug/<turn-id>.jsonl`.
+
+## Capability Routing
+
+- model setup, prompt management, output control, response reuse, session memory, embeddings, KB, or retrieval-to-answer -> `agently-request`
+- Action Runtime, built-in actions, tools compatibility, MCP, Execution Environment, FastAPIHelper, `auto_func`, `KeyWaiter`, or `agently-devtools` observation and evaluation integration -> `agently-runtime`
+- model-generated or app-submitted DAG planning, TaskDAG validation, resolver handlers, or Dynamic Task execution -> `agently-dynamic-task`
+- branching, concurrency, waiting/resume, mixed sync/async orchestration, event-driven fan-out, process-clarity refactors, runtime stream, graph-friendly workflow definitions, or explicit multi-stage quality loops -> `agently-triggerflow`
+- migration choice between LangChain and LangGraph -> `agently-migration`
+
+## Anti-Patterns
+
+- do not skip this playbook when the owner layer is unresolved
+- do not invent custom output parsers, retry loops, or orchestration first
+- do not use keyword, substring, regex, or text snapshot checks as the primary
+  correctness signal for model-owned semantic content; keep them only as smoke
+  gates for structure, routing, or required-field presence
+- do not use tokenization, word segmentation, keyword hits, or substring rules
+  as the route owner for AI-app scenario routing, intent detection, or business
+  classification
+- do not put model-app quality gates, business scoring, or route choice into
+  local helper functions that only count words, split tokens, search keywords,
+  or compare snapshots when an Agently model request can own the judgment
+- do not let sync-first sample code dictate the service architecture when the target is clearly async-capable
+- do not split project initialization into a fake standalone framework surface before the owner layers are chosen
+- do not treat multi-agent, judge, or review flows as separate framework surfaces before checking native Agently capabilities
+- do not normalize long-lived business patches, workarounds, compatibility glue,
+  or private wrappers when the underlying need is a missing, broken,
+  misleading, undocumented, or unfriendly Agently framework capability
+
+## Read Next
+
+- `references/capability-map.md`
+- `references/project-framework.md`
+- `references/model-quality-validation.md`

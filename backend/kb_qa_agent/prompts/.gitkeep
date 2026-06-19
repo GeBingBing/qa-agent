@@ -1,0 +1,4 @@
+# prompts/ — 提示词外置目录
+# 真实业务提示词按 domain 拆分为多个 YAML 文件，由 config.py 加载。
+# 例如：intake_router.yaml / dag_planner.yaml / reflection.yaml / risk_assess.yaml / 各 domain 的 system prompt。
+# 占位文件，方便目录上库。

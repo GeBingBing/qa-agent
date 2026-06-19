@@ -1,0 +1,97 @@
+# =============================================================================
+# kb-qa-agent — Docker Compose
+# =============================================================================
+# 一键启动 ChromaDB + mock internal MCP + backend FastAPI + frontend Nginx。
+#
+# 默认 profile（chromadb + mock-internal-mcp）：用于本地开发，后端/前端在宿主跑
+#   docker compose up -d chromadb mock-internal-mcp
+#
+# full profile（再加 app + web）：完整容器化体验
+#   docker compose --profile full up -d
+# =============================================================================
+
+services:
+  chromadb:
+    image: chromadb/chroma:0.5.20
+    container_name: kb-qa-chromadb
+    restart: unless-stopped
+    ports:
+      - "8001:8000"          # 8001 避免与 FastAPI (8000) 冲突
+    volumes:
+      - ./data/chroma:/chroma/chroma
+    environment:
+      - CHROMA_SERVER_AUTHN_CREDENTIALS=
+      - CHROMA_SERVER_AUTHN_PROVIDER=
+      - PERSIST_DIRECTORY=/chroma/chroma
+      - ANONYMIZED_TELEMETRY=False
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/api/v1/heartbeat', timeout=2).status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # 本地 mock MCP server：把 4 领域 (HR/Finance/IT/Legal) 工具暴露为 MCP-over-HTTP。
+  # 纯 stdlib，无 chromadb / openai / agently 依赖，启动极快。
+  mock-internal-mcp:
+    build:
+      context: ./backend
+      dockerfile: mock_mcp_servers/Dockerfile
+    container_name: kb-qa-mock-mcp
+    restart: unless-stopped
+    ports:
+      - "8765:8765"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data/mock_db:/app/data/mock_db:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8765/health', timeout=2).status==200 else 1)"]
+      interval: 30s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  # FastAPI 后端：完整 LLM + RAG + Agent 流水线。仅在 `full` profile 下启用。
+  app:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: kb-qa-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - INTERNAL_MCP_URL=http://mock-internal-mcp:8765/mcp
+      - CHROMA_PERSIST_DIR=/data/chroma
+      - HF_HOME=/data/hf-cache
+    volumes:
+      - ./data:/data
+    depends_on:
+      chromadb:
+        condition: service_healthy
+      mock-internal-mcp:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2).status==200 else 1)"]
+      interval: 30s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+
+  # 前端 Nginx：构建静态资源 + 反代 /v1 /health 到 app:8000
+  web:
+    profiles: ["full"]
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: kb-qa-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - app

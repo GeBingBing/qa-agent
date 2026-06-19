@@ -1,0 +1,39 @@
+{
+  "employees": {
+    "E001": {
+      "name": "张三",
+      "department": "engineering",
+      "manager": "M001",
+      "annual_leave_quota_days": 15,
+      "annual_leave_used_days": 4,
+      "annual_leave_remaining_days": 11,
+      "sick_leave_used_days": 1,
+      "join_date": "2022-03-15"
+    },
+    "E002": {
+      "name": "李四",
+      "department": "marketing",
+      "manager": "M002",
+      "annual_leave_quota_days": 10,
+      "annual_leave_used_days": 2,
+      "annual_leave_remaining_days": 8,
+      "sick_leave_used_days": 0,
+      "join_date": "2023-08-01"
+    },
+    "E003": {
+      "name": "王五",
+      "department": "finance",
+      "manager": "M003",
+      "annual_leave_quota_days": 20,
+      "annual_leave_used_days": 15,
+      "annual_leave_remaining_days": 5,
+      "sick_leave_used_days": 2,
+      "join_date": "2018-06-20"
+    }
+  },
+  "leave_requests": [
+    {"id": "L001", "employee_id": "E001", "type": "annual", "from": "2026-06-20", "to": "2026-06-22", "days": 3, "status": "approved"},
+    {"id": "L002", "employee_id": "E002", "type": "sick", "from": "2026-05-10", "to": "2026-05-10", "days": 1, "status": "approved"},
+    {"id": "L003", "employee_id": "E003", "type": "annual", "from": "2026-07-01", "to": "2026-07-10", "days": 8, "status": "pending"}
+  ]
+}

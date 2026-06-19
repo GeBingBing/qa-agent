@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "skills": {
+    "agently": {
+      "source": "/tmp/agently-skills",
+      "sourceType": "local",
+      "computedHash": "ac274c6823a3d0e97b4146e9793a29bdf1d9008984195b242d16a64751edd17c"
+    },
+    "agently-dynamic-task": {
+      "source": "/tmp/agently-skills",
+      "sourceType": "local",
+      "computedHash": "beb34cacfff1090bb54b76b9c83951101db9134c22100bf7de5e51f287577490"
+    },
+    "agently-request": {
+      "source": "/tmp/agently-skills",
+      "sourceType": "local",
+      "computedHash": "a9e0c9111f896d2f2f829d3934853ad2d7b6cc0da8a71969fc5cece0cdd9875f"
+    },
+    "agently-runtime": {
+      "source": "/tmp/agently-skills",
+      "sourceType": "local",
+      "computedHash": "0aa73426eaa39c571c39d7fa25ee88c17ca71049abc49a4577f4244d1087bfc5"
+    },
+    "agently-triggerflow": {
+      "source": "/tmp/agently-skills",
+      "sourceType": "local",
+      "computedHash": "50da56db42d4b04a8b772dbfb9388b3f71a34602bf6a7d203938108ac7c78958"
+    }
+  }
+}

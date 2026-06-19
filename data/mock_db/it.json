@@ -1,0 +1,17 @@
+{
+  "accounts": {
+    "E001": {"vpn_access": true, "aws_console_access": "readonly", "github_role": "developer", "last_login": "2026-06-13"},
+    "E002": {"vpn_access": true, "aws_console_access": "none",      "github_role": "viewer",     "last_login": "2026-06-10"},
+    "E003": {"vpn_access": true, "aws_console_access": "admin",    "github_role": "maintainer", "last_login": "2026-06-15"}
+  },
+  "tickets": [
+    {"id": "T001", "title": "VPN 偶尔断连", "reporter": "E001", "priority": "low", "status": "open",       "created": "2026-06-10"},
+    {"id": "T002", "title": "申请 AWS dev 权限", "reporter": "E002", "priority": "medium", "status": "in_progress", "created": "2026-06-08"},
+    {"id": "T003", "title": "工位笔记本蓝屏", "reporter": "E003", "priority": "high", "status": "resolved",  "created": "2026-06-05"}
+  ],
+  "system_status": {
+    "vpn_gateway":   {"status": "operational", "last_incident": "2026-04-12"},
+    "email":         {"status": "operational", "last_incident": "2026-05-20"},
+    "internal_wiki": {"status": "degraded",    "last_incident": "2026-06-14"}
+  }
+}

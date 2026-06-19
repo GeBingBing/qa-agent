@@ -1,0 +1,49 @@
+{
+  "contracts": [
+    {
+      "id": "C001",
+      "title": "AWS 中国服务主协议",
+      "counterparty": "亚马逊通技术服务（北京）有限公司",
+      "signed_date": "2024-09-01",
+      "expiry_date": "2027-08-31",
+      "tags": ["云计算", "基础设施", "数据处理"],
+      "key_clauses": {
+        "data_residency": "数据存储于 AWS 北京/宁夏区域",
+        "termination_notice_days": 90,
+        "liability_cap_cny": 5000000
+      }
+    },
+    {
+      "id": "C002",
+      "title": "JetBrains 全员许可",
+      "counterparty": "JetBrains s.r.o.",
+      "signed_date": "2025-01-15",
+      "expiry_date": "2026-12-31",
+      "tags": ["软件许可"],
+      "key_clauses": {
+        "users": 200,
+        "renewal_auto": true,
+        "data_processing_agreement": "包含 DPA 附录"
+      }
+    },
+    {
+      "id": "C003",
+      "title": "数据处理协议 (DPA) 模板 v3",
+      "counterparty": "内部模板",
+      "signed_date": "2025-11-01",
+      "expiry_date": null,
+      "tags": ["GDPR", "个保法", "DPA"],
+      "key_clauses": {
+        "covers_personal_data": true,
+        "subprocessors_require_consent": true,
+        "data_subject_request_sla_days": 30
+      }
+    }
+  ],
+  "regulations": [
+    {"id": "R001", "name": "个人信息保护法 (PIPL)", "effective_date": "2021-11-01", "scope": "所有处理中国境内自然人个人信息的主体"},
+    {"id": "R002", "name": "GDPR (欧盟通用数据保护条例)", "effective_date": "2018-05-25", "scope": "欧盟数据主体"},
+    {"id": "R003", "name": "网络安全法", "effective_date": "2017-06-01", "scope": "境内网络运营者"},
+    {"id": "R004", "name": "数据安全法", "effective_date": "2021-09-01", "scope": "境内数据处理活动"}
+  ]
+}
