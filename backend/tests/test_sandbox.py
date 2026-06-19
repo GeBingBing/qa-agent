@@ -5,14 +5,11 @@
 
 from __future__ import annotations
 
-import asyncio
 import shutil
 from pathlib import Path
 
 import pytest
-
 from kb_qa_agent.core.sandbox import BashSandbox, SandboxError
-
 
 # 仅在 bash 可用时跑这组测试
 pytestmark = pytest.mark.skipif(
@@ -75,8 +72,8 @@ async def test_whitelist_matches_prefix_only(tmp_path: Path):
     # 当前实现是 startswith，所以 "lsof" 也会通过白名单（这是已知行为）
     # 真要严格匹配应当加空格判断；这里测试当前契约
     # 如果将来改成严格匹配，这个测试需要更新
-    r2 = await sb.run("lsof")  # 这个会被 startswith("ls") 通过白名单
     # 仅验证不抛白名单异常；进程是否成功取决于 OS
+    await sb.run("lsof")
 
 
 # ---------------------------------------------------------------------------
@@ -119,7 +116,7 @@ async def test_home_is_workdir(tmp_path: Path):
 async def test_workdir_created_if_missing(tmp_path: Path):
     new_workdir = tmp_path / "auto_created"
     assert not new_workdir.exists()
-    sb = BashSandbox(workdir=str(new_workdir), allowed_cmd_prefixes=["ls"], timeout=5)
+    BashSandbox(workdir=str(new_workdir), allowed_cmd_prefixes=["ls"], timeout=5)
     assert new_workdir.exists()
 
 

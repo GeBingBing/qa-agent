@@ -10,7 +10,6 @@ from starlette.responses import Response
 
 from .logging_setup import request_id_var
 
-
 HEADER_NAME = "X-Request-Id"
 
 

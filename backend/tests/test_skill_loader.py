@@ -7,15 +7,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from kb_qa_agent.core.skill_loader import (
     DecisionCard,
     apply_trust_gate,
     load_decision_cards,
     select_required,
 )
-
 
 # ---------------------------------------------------------------------------
 # Frontmatter 解析

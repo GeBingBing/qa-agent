@@ -10,7 +10,6 @@ from kb_qa_agent.providers import env_keys
 from kb_qa_agent.providers.agently_adapter import _env_base, _env_key, _env_model
 from kb_qa_agent.providers.openai_compat import OpenAICompatProvider
 
-
 KNOWN = ["openai", "deepseek", "kimi", "glm", "dashscope", "minimax"]
 
 

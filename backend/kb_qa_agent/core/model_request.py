@@ -9,21 +9,20 @@
 
 from __future__ import annotations
 
-import asyncio
 import contextlib
 import contextvars
-from typing import Any, Iterator
+from collections.abc import Iterator
+from typing import Any
 
 from ..providers import (
+    PROVIDER_REGISTRY,
     BaseProvider,
     ChatMessage,
-    PROVIDER_REGISTRY,
     active_provider,
     build_structured_messages,
     parse_json_response,
 )
 from ..providers.structured import strip_thinking_blocks
-
 
 _current_override: contextvars.ContextVar[tuple[str, str | None] | None] = (
     contextvars.ContextVar("kb_qa_agent_request_provider_override", default=None)

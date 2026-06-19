@@ -39,8 +39,8 @@ def _parse_sse(stream):
 
 def test_rag_instance_lives_on_app_state(monkeypatch, fake_provider, reset_registry, reset_bootstrap):
     """app.state.rag 应在 lifespan 启动后存在；类型为 RAG。"""
-    from kb_qa_agent.main import app
     from kb_qa_agent.core.rag import RAG
+    from kb_qa_agent.main import app
 
     with TestClient(app) as client:
         client.get("/health")
@@ -51,12 +51,9 @@ def test_rag_instance_lives_on_app_state(monkeypatch, fake_provider, reset_regis
 def test_chat_reuses_app_state_rag(monkeypatch, fake_provider, reset_registry, reset_bootstrap):
     """两次 /v1/chat 请求应共享同一个 RAG 实例（不重建）。"""
     from kb_qa_agent.api import chat as chat_api
-    from kb_qa_agent.core.rag import RAG
     from kb_qa_agent.core import Plan, PlanNode
     from kb_qa_agent.flows import (
         intake as intake_mod,
-        risk_approval as risk_mod,
-        reflection as reflection_mod,
     )
     from kb_qa_agent.main import app
 

@@ -19,7 +19,6 @@ from ..config import get_config
 from ..providers import ChatMessage
 from .model_request import TaskExecutor
 
-
 # ---------------------------------------------------------------------------
 # DecisionCard
 # ---------------------------------------------------------------------------

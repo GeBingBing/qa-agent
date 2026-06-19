@@ -6,15 +6,13 @@
 from __future__ import annotations
 
 import pytest
-
 from kb_qa_agent.core.planner import (
     Plan,
-    PlanNode,
     PlannerError,
+    PlanNode,
     topological_order,
     validate_plan,
 )
-
 
 # ---------------------------------------------------------------------------
 # 校验：合法 plan

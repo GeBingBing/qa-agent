@@ -18,13 +18,14 @@ from .flow_engine import build_flow, build_llm_chunk, chunk, to_sub_flow
 from .model_request import TaskExecutor, quick_structured, quick_text
 from .planner import (
     Plan,
-    PlanNode,
     PlannerError,
+    PlanNode,
     plan_dag,
     plan_with_retry,
     topological_order,
     validate_plan,
 )
+from .rag import RAG, RetrievalHit, chunk_text
 from .react_loop import REACT_SCHEMA, ReActLoop, ReActResult, ReActStep
 from .reflection import (
     DEFAULT_REPORT_CRITERIA,
@@ -35,7 +36,6 @@ from .reflection import (
     revise_draft,
 )
 from .router import ROUTER_SCHEMA, DomainName, route_query
-from .rag import RAG, RetrievalHit, chunk_text
 from .sandbox import BashSandbox, SandboxError, SandboxResult
 from .skill_loader import (
     SELECT_SCHEMA,

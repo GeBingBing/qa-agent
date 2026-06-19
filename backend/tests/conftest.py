@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-import os
 import sys
 from pathlib import Path
-from typing import Any, AsyncIterator
+from typing import Any
 
 import pytest
 

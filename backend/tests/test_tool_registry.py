@@ -8,9 +8,7 @@ from __future__ import annotations
 import asyncio
 
 import pytest
-
 from kb_qa_agent.core.tool_registry import ToolRegistry, ToolSpec
-
 
 # ---------------------------------------------------------------------------
 # 注册 / 查询

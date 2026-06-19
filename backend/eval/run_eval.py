@@ -21,11 +21,9 @@ if str(_BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(_BACKEND_ROOT))
 
 import httpx  # noqa: E402
-
 from kb_qa_agent.domains import bootstrap  # noqa: E402
-from kb_qa_agent.observability.cost import reset_report, get_report  # noqa: E402
+from kb_qa_agent.observability.cost import get_report, reset_report  # noqa: E402
 from kb_qa_agent.observability.eval import EvalSample, score_answer  # noqa: E402
-
 
 GOLDEN_PATH = Path(__file__).resolve().parent / "golden_qa.jsonl"
 DEFAULT_API = os.environ.get("KB_QA_API_BASE", "http://localhost:8000")

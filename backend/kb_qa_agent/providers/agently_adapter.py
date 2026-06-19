@@ -19,9 +19,7 @@ from typing import Any
 from agently import Agently
 
 from .base import _get_env
-from .claude import ClaudeProvider
 from .env_keys import api_key_env, base_url_env, default_model_env
-from .openai_compat import OpenAICompatProvider
 
 
 def configure_agently_for_active_provider() -> dict[str, Any]:

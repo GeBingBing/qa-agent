@@ -14,7 +14,6 @@ from typing import Any
 
 from dotenv import find_dotenv, load_dotenv
 
-
 # 项目根 = 本文件向上 2 级 = ~/Documents/work_agent/kb-qa-agent
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 BACKEND_ROOT = Path(__file__).resolve().parents[1]

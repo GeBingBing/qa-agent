@@ -11,16 +11,15 @@
 
 from __future__ import annotations
 
-import asyncio
 import json
 import time
+from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-from typing import Any, AsyncIterator
+from typing import Any
 
 from ..providers import ChatMessage
 from .model_request import TaskExecutor
 from .tool_registry import GLOBAL_REGISTRY, ToolRegistry
-
 
 REACT_SCHEMA: dict[str, Any] = {
     "type": "object",

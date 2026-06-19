@@ -7,12 +7,10 @@
 from __future__ import annotations
 
 import os
-from typing import Any
 
-from .base import BaseProvider, _get_env
+from .base import BaseProvider
 from .claude import ClaudeProvider
 from .openai_compat import OpenAICompatProvider
-
 
 # ---------------------------------------------------------------------------
 # 默认定价（USD / 1k tokens）

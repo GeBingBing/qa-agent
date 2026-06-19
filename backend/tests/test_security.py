@@ -10,7 +10,6 @@
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
-
 from kb_qa_agent.api.security import require_api_token
 
 

@@ -14,7 +14,6 @@ from typing import Any
 from ..core import TaskExecutor
 from ..providers import ChatMessage
 
-
 RISK_SCHEMA: dict[str, Any] = {
     "type": "object",
     "properties": {

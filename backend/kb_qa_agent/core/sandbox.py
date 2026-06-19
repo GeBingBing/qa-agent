@@ -16,9 +16,9 @@ from __future__ import annotations
 import asyncio
 import os
 import shutil
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Sequence
 
 from ..config import get_config
 
@@ -89,7 +89,7 @@ class BashSandbox:
         try:
             stdout_b, stderr_b = await asyncio.wait_for(proc.communicate(), timeout=self.timeout)
             timed_out = False
-        except asyncio.TimeoutError:
+        except TimeoutError:
             proc.kill()
             await proc.wait()
             stdout_b, stderr_b = b"", f"(timeout after {self.timeout}s)".encode()

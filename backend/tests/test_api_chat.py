@@ -10,11 +10,11 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
-
 from kb_qa_agent.core import GLOBAL_REGISTRY, Plan, PlanNode
 
 
@@ -48,10 +48,10 @@ def app(monkeypatch, fake_provider, reset_registry, reset_bootstrap):
     """构造一个完整可调用的 FastAPI app；intake/plan/risk/reflection 全部 stub。"""
     # 让 plan_gen / risk / reflection 走 stub，避免 FakeProvider structured 默认返回不匹配 schema
     from kb_qa_agent.api import chat as chat_api
-    from kb_qa_agent.flows import plan_gen as plan_gen_mod
     from kb_qa_agent.flows import intake as intake_mod
-    from kb_qa_agent.flows import risk_approval as risk_mod
+    from kb_qa_agent.flows import plan_gen as plan_gen_mod
     from kb_qa_agent.flows import reflection as reflection_mod
+    from kb_qa_agent.flows import risk_approval as risk_mod
 
     monkeypatch.setattr(intake_mod, "classify_intent", lambda q, conversation_history=None: {
         "domain": "hr",
@@ -227,8 +227,8 @@ def test_sse_intake_error_emits_error_then_final(monkeypatch, app):
 
 def test_sse_request_provider_override_takes_effect(monkeypatch, app, fake_provider):
     from kb_qa_agent.api import chat as chat_api
-    from kb_qa_agent.providers import registry as registry_mod
     from kb_qa_agent.core.model_request import TaskExecutor
+    from kb_qa_agent.providers import registry as registry_mod
 
     fake2 = type(fake_provider)()
     fake2.name = "fake2"

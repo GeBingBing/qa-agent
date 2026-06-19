@@ -14,7 +14,6 @@ from typing import Any, Literal
 from ..providers import ChatMessage
 from .model_request import TaskExecutor
 
-
 NodeKind = Literal["llm", "tool", "human"]
 
 
@@ -122,7 +121,7 @@ def plan_with_retry(
 ) -> Plan:
     """生成 → 校验 → 失败则把错误回灌给模型 → 重试。"""
     last_err: Exception | None = None
-    for attempt in range(max_retries):
+    for _attempt in range(max_retries):
         try:
             msgs: list[ChatMessage] = [
                 ChatMessage(role="system", content=PLANNER_SYSTEM),

@@ -12,14 +12,14 @@ import contextlib
 import json
 import os
 import time
-from typing import Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import Any
 
 from fastapi import APIRouter, Depends, Request
 from sse_starlette.sse import EventSourceResponse
 
 from ..core import RAG
 from ..core.model_request import TaskExecutor, request_provider
-from ..providers.structured import strip_thinking_blocks
 from ..domains import bootstrap as bootstrap_domains
 from ..flows import (
     aexecute_plan,
@@ -28,11 +28,10 @@ from ..flows import (
     finalize_with_reflection,
     generate_plan,
 )
-from ..observability import tracer
 from ..observability import metrics as metrics_mod
+from ..observability import tracer
 from .models import ChatRequest
 from .security import require_api_token
-
 
 router = APIRouter(prefix="/v1", tags=["chat"])
 

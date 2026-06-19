@@ -10,9 +10,9 @@ from __future__ import annotations
 
 import asyncio
 import inspect
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Awaitable, Callable, Literal
-
+from typing import Any, Literal
 
 SideEffectLevel = Literal["read", "write", "external"]
 

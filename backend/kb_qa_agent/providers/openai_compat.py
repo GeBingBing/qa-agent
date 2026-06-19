@@ -8,12 +8,12 @@
 
 from __future__ import annotations
 
-import os
-from typing import Any, AsyncIterator, Literal
+from collections.abc import AsyncIterator
+from typing import Any, Literal
 
 from openai import AsyncOpenAI, OpenAI
 
-from .base import BaseProvider, ChatMessage, ChatResponse, StreamChunk, _coerce_messages, _get_env
+from .base import ChatMessage, ChatResponse, StreamChunk, _coerce_messages, _get_env
 from .env_keys import api_key_env, base_url_env, default_model_env
 
 

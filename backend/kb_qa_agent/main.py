@@ -7,7 +7,6 @@
 from __future__ import annotations
 
 import logging
-import os
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
@@ -21,7 +20,6 @@ from .domains import bootstrap as bootstrap_domains
 from .observability.logging_setup import install_logging
 from .observability.request_id_middleware import RequestIdMiddleware
 from .providers import configure_agently_for_active_provider, list_available
-
 
 install_logging()
 logger = logging.getLogger("kb_qa_agent")

@@ -9,10 +9,7 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 import pytest
-
 from kb_qa_agent.api.chat import split_thinking_stream
 
 

@@ -4,9 +4,8 @@
 bootstrap() 是幂等的，可重复调用。
 """
 
-from . import finance, hr, it, legal
 from ..core.tool_registry import GLOBAL_REGISTRY
-
+from . import finance, hr, it, legal
 
 _BOOTSTRAPPED = False
 

@@ -4,11 +4,10 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Response, status
 
-from ..providers import active_provider, list_available
 from ..core import GLOBAL_REGISTRY, load_decision_cards
 from ..observability import metrics as metrics_mod
+from ..providers import active_provider, list_available
 from .models import HealthResponse
-
 
 router = APIRouter(tags=["meta"])
 

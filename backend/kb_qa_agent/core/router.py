@@ -17,7 +17,6 @@ from typing import Any, Literal
 from ..providers import ChatMessage
 from .model_request import TaskExecutor
 
-
 DomainName = Literal["hr", "finance", "it", "legal", "general"]
 
 

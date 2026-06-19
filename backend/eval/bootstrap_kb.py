@@ -15,7 +15,6 @@ if str(_BACKEND_ROOT) not in sys.path:
 
 from kb_qa_agent.core import RAG  # noqa: E402
 
-
 KB_DIR = Path(__file__).resolve().parents[2] / "data" / "knowledge_base"
 
 

@@ -8,8 +8,8 @@
 
 from __future__ import annotations
 
-from .._common import load_mock
 from ...core.tool_registry import GLOBAL_REGISTRY
+from .._common import load_mock
 
 
 def query_leave_balance(employee_id: str) -> dict:

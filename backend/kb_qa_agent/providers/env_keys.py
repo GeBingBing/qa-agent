@@ -6,7 +6,6 @@ OpenAI 兼容族 6 家 + Anthropic 各自的 `<NAME>_API_KEY` / `<NAME>_BASE_URL
 
 from __future__ import annotations
 
-
 _KEY_OVERRIDES: dict[str, str] = {
     "opus": "ANTHROPIC_API_KEY",
 }

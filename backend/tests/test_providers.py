@@ -5,14 +5,14 @@
 
 from __future__ import annotations
 
-import pytest
+from typing import Any
 
+import pytest
 from kb_qa_agent.providers import (
     PROVIDER_REGISTRY,
     active_provider,
     get_provider,
     list_all,
-    list_available,
 )
 from kb_qa_agent.providers.base import ChatMessage
 from kb_qa_agent.providers.openai_compat import OpenAICompatProvider
@@ -20,7 +20,6 @@ from kb_qa_agent.providers.structured import (
     build_structured_messages,
     parse_json_response,
 )
-
 
 # ---------------------------------------------------------------------------
 # Registry
@@ -206,7 +205,6 @@ def test_parse_json_response_handles_thinking_followed_by_prose_then_json():
 
 
 def test_supports_json_mode_only_for_known_providers(monkeypatch):
-    from kb_qa_agent.providers import openai_compat as oc_mod
 
     p_openai = OpenAICompatProvider(name="openai")
     p_minimax = OpenAICompatProvider(name="minimax")

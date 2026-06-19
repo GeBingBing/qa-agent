@@ -12,7 +12,6 @@ from typing import Any
 from ..providers import ChatMessage
 from .model_request import TaskExecutor
 
-
 EVAL_SCHEMA: dict[str, Any] = {
     "type": "object",
     "properties": {

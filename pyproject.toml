@@ -85,7 +85,11 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "ASYNC"]
-ignore = ["E501"]
+ignore = [
+    "E501",
+    # ASYNC240 误报: pathlib.Path 在 lifespan / 测试一次性环境里同步 IO 没问题
+    "ASYNC240",
+]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

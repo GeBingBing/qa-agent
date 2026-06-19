@@ -12,8 +12,8 @@ from typing import Any
 
 from ..core import (
     GLOBAL_REGISTRY,
-    Plan,
     RAG,
+    Plan,
     apply_trust_gate,
     load_decision_cards,
     plan_with_retry,

@@ -10,9 +10,10 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from ..config import get_config
 
@@ -104,7 +105,7 @@ class RAG:
         metas = (res.get("metadatas") or [[]])[0]
         dists = (res.get("distances") or [[]])[0]
         out: list[RetrievalHit] = []
-        for text, meta, dist in zip(docs, metas, dists):
+        for text, meta, dist in zip(docs, metas, dists, strict=False):
             out.append(RetrievalHit(text=text, metadata=meta or {}, score=float(dist)))
         return out
 

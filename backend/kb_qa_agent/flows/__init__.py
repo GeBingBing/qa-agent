@@ -7,11 +7,11 @@
 便于业务层（api/chat.py / eval/run_eval.py）直接调用而不必关心 TriggerFlow 细节。
 """
 
+from .dep_executor import aexecute_plan, execute_plan
 from .intake import classify_intent
 from .plan_gen import generate_plan
-from .dep_executor import aexecute_plan, execute_plan
-from .risk_approval import assess_and_route_risk
 from .reflection import finalize_with_reflection
+from .risk_approval import assess_and_route_risk
 
 __all__ = [
     "classify_intent",

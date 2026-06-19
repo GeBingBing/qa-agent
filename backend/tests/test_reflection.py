@@ -9,7 +9,6 @@
 from __future__ import annotations
 
 import pytest
-
 from kb_qa_agent.core.reflection import (
     EvaluationResult,
     reflect_and_revise,

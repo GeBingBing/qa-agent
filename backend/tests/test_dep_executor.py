@@ -9,10 +9,8 @@ from __future__ import annotations
 import asyncio
 
 import pytest
-
 from kb_qa_agent.core import GLOBAL_REGISTRY, Plan, PlanNode
 from kb_qa_agent.flows.dep_executor import aexecute_plan, execute_plan
-
 
 # ---------------------------------------------------------------------------
 # Fixtures

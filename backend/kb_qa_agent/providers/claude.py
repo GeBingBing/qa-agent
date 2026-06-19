@@ -6,10 +6,10 @@
 
 from __future__ import annotations
 
-import os
-from typing import Any, AsyncIterator, Literal
+from collections.abc import AsyncIterator
+from typing import Any, Literal
 
-from .base import BaseProvider, ChatMessage, ChatResponse, StreamChunk, _coerce_messages, _get_env
+from .base import ChatMessage, ChatResponse, StreamChunk, _coerce_messages, _get_env
 
 
 class ClaudeProvider:
