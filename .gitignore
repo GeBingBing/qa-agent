@@ -94,3 +94,4 @@ frontend/.env.local
 
 # OS
 Thumbs.db
+frontend/tsconfig.tsbuildinfo
