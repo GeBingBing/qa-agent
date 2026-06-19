@@ -222,6 +222,7 @@ kb-qa-agent/
 
 | 我想知道… | 看这里 |
 |---|---|
+| 5 分钟体验全部能力 | [`docs/DEMO.md`](docs/DEMO.md) |
 | 整体架构和决策 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
 | 模块速查（要找某段代码在哪） | [`docs/CODE_MAP.md`](docs/CODE_MAP.md) |
 | `/v1/chat` SSE 协议 | [`specs/chat.spec.md`](specs/chat.spec.md) |
