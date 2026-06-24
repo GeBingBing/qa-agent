@@ -37,6 +37,46 @@ router = APIRouter(prefix="/v1", tags=["chat"])
 
 TYPEWRITER_CHUNK_SIZE = 4
 TYPEWRITER_DELAY_SECONDS = 0.015
+MAX_SNIPPET_CHARS = 240
+MAX_RAG_HITS_INTO_PROMPT = 4
+
+
+def _build_sources_event(hits: list) -> list[dict[str, Any]]:
+    """从 RetrievalHit 列表构造 sources 事件 payload。
+
+    - 按 source 去重（保留 score 最低 / 最相关那条）
+    - snippet 截到 MAX_SNIPPET_CHARS 字
+    - id 从 1 开始递增
+    """
+    by_source: dict[str, dict[str, Any]] = {}
+    for h in hits:
+        src = h.metadata.get("source", "?")
+        if src in by_source and by_source[src]["score"] <= h.score:
+            continue
+        by_source[src] = {
+            "source": src,
+            "heading_path": h.metadata.get("heading_path", ""),
+            "score": round(float(h.score), 4),
+            "snippet": h.text[:MAX_SNIPPET_CHARS],
+        }
+    sources = sorted(by_source.values(), key=lambda s: s["score"])
+    for i, s in enumerate(sources, start=1):
+        s["id"] = i
+    return sources
+
+
+def _format_rag_for_prompt(sources: list[dict[str, Any]]) -> str:
+    """把 sources 渲染成可注入 prompt 的块（每条带 [i] 角标号）。"""
+    if not sources:
+        return "（无政策片段）"
+    parts: list[str] = []
+    for s in sources:
+        heading = s.get("heading_path") or ""
+        header = f"[{s['id']}] {s['source']}"
+        if heading:
+            header += f"#{heading}"
+        parts.append(f"{header}\n{s['snippet']}")
+    return "\n\n".join(parts)
 
 # 启动时把 4 域工具注册到 GLOBAL_REGISTRY
 _ = bootstrap_domains()
@@ -68,13 +108,19 @@ async def _real_stream_answer(
     execution_results: dict[str, Any],
     risk: dict[str, Any],
     request: Request | None,
+    rag_hits: list | None = None,
 ):
     """真 LLM 流式：基于上游 draft + 执行结果，让 active provider 增量产出 final answer。
 
     把模型输出按 `<think>...</think>` 拆成 thinking_delta / answer_delta 两条信道，
     最后再发一个 ``{"type": "final", "text": ...}`` 让调用方汇总。
+
+    rag_hits 注入：系统 prompt 强制要求 [1] [2] 角标 + 段尾「## 参考资料」段。
     """
     from ..providers import ChatMessage  # noqa: WPS433 — 内部依赖按需导入
+
+    sources = _build_sources_event(rag_hits or [])
+    rag_block = _format_rag_for_prompt(sources)
 
     context_summary = json.dumps({
         "intake": intake,
@@ -84,10 +130,15 @@ async def _real_stream_answer(
     system_prompt = (
         "你是企业知识库问答助手。基于已收集的上下文与初稿，"
         "生成一份高质量、结构化的最终回答。回答要简洁、准确、有可执行性。"
-        "如果你需要展示思考过程，可以包在 <think>...</think> 中；最终回答放在 </think> 之后。"
+        "如果下方提供了「政策片段」，必须**严格依据**它们回答；"
+        "在正文里用 [1] [2] 角标对应片段，"
+        "并在最后追加「## 参考资料」段，列出 [i] source#heading。"
+        "如果你需要展示思考过程，可以包在 <think>...</think> 中；"
+        "最终回答放在 </think> 之后。"
     )
     user_prompt = (
         f"## 初稿\n{draft}\n\n"
+        f"## 政策片段（用于引用，角标必须严格对应）\n{rag_block}\n\n"
         f"## 上下文（路由 / 执行 / 风险）\n{context_summary}\n\n"
         "请输出最终回答。"
     )
@@ -289,6 +340,11 @@ async def _stream_chat(
                 "blocked_skills": plan_bundle["blocked_skills"],
                 "timestamp": _now(),
             })
+
+            # Step 2.5: sources 事件（让前端在思考阶段就能渲染来源 chip）
+            rag_hits = plan_bundle.get("rag_hits") or []
+            if rag_hits:
+                yield _sse_event("sources", _build_sources_event(rag_hits))
             if await _is_client_disconnected(request):
                 return
 
@@ -332,6 +388,7 @@ async def _stream_chat(
             phase = "finalize"
             if risk["auto_proceed"] or risk["risk_level"] != "high":
                 draft = _extract_draft(execution_results) or "(no upstream content)"
+                rag_hits = plan_bundle.get("rag_hits") or []
                 if req.enable_reflection:
                     with tracer.span("reflection_finalize", parent=root.span_id):
                         reflection = finalize_with_reflection(
@@ -340,6 +397,12 @@ async def _stream_chat(
                                 "intake": intake,
                                 "execution": execution_results,
                                 "risk": risk,
+                                "rag_hits": [
+                                    {"source": h.metadata.get("source"),
+                                     "heading_path": h.metadata.get("heading_path"),
+                                     "snippet": h.text[:MAX_SNIPPET_CHARS]}
+                                    for h in rag_hits[:MAX_RAG_HITS_INTO_PROMPT]
+                                ],
                             }, ensure_ascii=False, default=str)[:4000],
                             max_rounds=2,
                         )
@@ -366,6 +429,7 @@ async def _stream_chat(
                             execution_results=execution_results,
                             risk=risk,
                             request=request,
+                            rag_hits=rag_hits,
                         ):
                             kind = piece["type"]
                             if kind == "thinking":
