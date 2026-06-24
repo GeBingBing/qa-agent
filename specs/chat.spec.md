@@ -50,6 +50,7 @@ start
 intake
 plan
 [step_start, step_result] × N           # 每个 plan node 一对
+sources                                  # 可选：仅当 plan_bundle.rag_hits 非空时
 risk
 [thinking_delta] × T                     # （可选）模型 <think>...</think> 内增量
 [answer_delta] × M                       # 真流式 chunk（P1 起为 LLM 真实增量）
@@ -57,6 +58,7 @@ final
 ```
 
 `thinking_delta` 仅在 `enable_reflection=False` 真流式路径出现；含反思的路径不产生此事件。
+`sources` 仅在 `enable_rag=True` 且 `plan_bundle.rag_hits` 非空时出现；用于前端在流式正文之前渲染来源 chip。
 
 异常路径：
 
@@ -73,6 +75,7 @@ final                                    # 必发，content 为兜底说明
 | `start` | `query: str`, `ts: float` |
 | `intake` | `domain`, `intent`, `confidence`, `reasoning`, `needs_tools`, `timestamp` |
 | `plan` | `rationale`, `nodes`, `rag_hits_count`, `selected_skills`, `blocked_skills`, `timestamp` |
+| `sources` | `id: int`, `source: str`, `heading_path: str`, `score: float`, `snippet: str`（≤ 240 字）|
 | `step_start` | `id`, `kind`, `title`, `timestamp` |
 | `step_result` | `id`, `kind`, `status`, `content?`, `observation?`, `error?`, `timestamp` |
 | `risk` | `risk_level`, `auto_proceed`, `reasons`, `required_approver`, `timestamp` |
@@ -90,6 +93,7 @@ final                                    # 必发，content 为兜底说明
 - **I5**：`provider` / `model` 显式传入时全链路（intake/plan/exec/reflection）使用同一组配置；未传则走 `KB_QA_ACTIVE_PROVIDER`。
 - **I6**：当 `request.is_disconnected()` 为真时，必须停止后续 LLM 调用并退出生成器。
 - **I7**：单条事件 `data` 字段是合法 JSON；多行 data 用换行拼接，前端按 SSE 规范合并。
+- **I8**：`sources`（若发出）必出现在 `plan` 之后、首个 `answer_delta` / `step_start` 之前；按 `source` 去重（同 source 保留 score 最低那条）。
 
 ## 6. 错误模式（Error Modes）
 
@@ -97,7 +101,7 @@ final                                    # 必发，content 为兜底说明
 |---|---|---|---|
 | Provider 未配置 | `error` → `final` | `provider_unavailable` | `final.final_answer` 含人类可读说明 |
 | structured JSON 解析失败 2 次 | `error` → `final` | `structured_parse_failed` | 透传最后一次模型输出截断（≤ 200 字） |
-| RAG 检索失败 | （静默继续，trace 记录） | — | `plan.rag_hits_count = 0` |
+| RAG 检索失败 | （静默继续，trace 记录） | — | `plan.rag_hits_count = 0`，不发 `sources` |
 | Skill 选择失败 | （静默继续，trace 记录） | — | `plan.selected_skills = []` |
 | 客户端断开 | 立刻停止；不再发事件 | — | server 侧 trace 标记 `disconnected` |
 | 鉴权失败（P2 起） | HTTP 401，无 SSE | — | 不进入 `_stream_chat` |
@@ -106,6 +110,9 @@ final                                    # 必发，content 为兜底说明
 ## 7. 边界情况（Edge Cases）
 
 - **空 plan**：planner 因模型抖动返回 0 个 node — 跳过 step 阶段，`final.final_answer` 走兜底说明；`risk` 仍会发出。
+- **`sources` 去重**：同 `source` 多条命中只展示 score 最低那一条；`snippet` 截断到 240 字；按 score 升序、`id` 从 1 起递增。
+- **`sources` 缺失**：当 `enable_rag=False` 或 `plan_bundle.rag_hits` 为空时不发 `sources` 事件；前端降级为不显示来源区。
+- **prompt 注入上界**：`_real_stream_answer` 最多把前 4 条 RAG 命中（`MAX_RAG_HITS_INTO_PROMPT`）注入 final 答案的 system/user prompt；超出部分仅出现在 `sources` 事件中。
 - **超长 final**：> 8000 字时 `answer_delta` 数量大；客户端按收到顺序累加，不必去重。
 - **思考块**：模型输出 `<think>...</think>` 必须在写入 `final.final_answer` 与 `answer_delta` 之前剥离。
 - **风险高 + auto_proceed=False**：跳过 reflection，`final.blocked_by_risk = True`，`final.final_answer` 写入审批说明。
