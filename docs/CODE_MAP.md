@@ -43,6 +43,7 @@ kb-qa-agent/
 | `planner.py` | `plan_dag` / `plan_with_retry` / `validate_plan` / `topological_order` | DAG 规划 + Kahn 拓扑 |
 | `reflection.py` | `evaluate_draft` / `revise_draft` / `reflect_and_revise`、`DEFAULT_REPORT_CRITERIA` | Draft → Evaluate → Revise 循环 |
 | `rag.py` | `RAG.add_documents` / `retrieve` / `format_hits`、`chunk_text` | ChromaDB 持久化 + 本地 embedding |
+| `chunking.py` | `chunk_markdown` / `parse_frontmatter`、`ChunkPiece` | markdown-aware 切分（H1/H2/H3 节 + heading_path + 幂等 id 入口）|
 | `sandbox.py` | `BashSandbox.run`（命令前缀白名单 + `asyncio.wait_for` 超时）| 受控执行环境 |
 | `skill_loader.py` | `load_decision_cards` / `select_by_model` / `select_required` / `apply_trust_gate` | Skills 加载 + 选择 + 信任门 |
 

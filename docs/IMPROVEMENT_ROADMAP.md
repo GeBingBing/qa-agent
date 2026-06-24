@@ -106,6 +106,35 @@
 
 ---
 
+## P4 — RAG 切分 / 引用 / 摄取幂等
+
+聚焦三个问题：
+1. 字符级切分丢上下文（不知道当前段属于哪个章节）
+2. 同一份政策文档重复写入 → chunk 数翻倍
+3. 模型拿到 RAG 片段但回答里不引用，前端看不到来源
+
+| # | 状态 | 改动 | 关键文件 |
+|---|---|---|---|
+| P4-1 | ✅ | markdown-aware 切分器（`ChunkPiece` + heading_path；H1/H2/H3 + code fence 保留 + 超长 sliding window） | `backend/kb_qa_agent/core/chunking.py` |
+| P4-2 | ✅ | `RAG.add_documents` 改走 `chunk_markdown`；id = `sha1(source+text+chunk)`；metadata 写入 `heading_path/doc_hash/ingested_at/embedding_model/embedding_provider` | `backend/kb_qa_agent/core/rag.py` |
+| P4-3 | ✅ | `eval/bootstrap_kb` 重写：递归 rglob、frontmatter 解析、`--reset` / `--json` 标志、`new/updated/skipped/chunks_added` 真实统计 | `backend/eval/bootstrap_kb.py`、`eval/__init__.py` |
+| P4-4 | ✅ | 幂等摄取：同 source 二次写入先 `delete(where={source})` 后 add，chunk 总量恒定 | `backend/kb_qa_agent/core/rag.py` |
+| P4-5 | ✅ | `sources` SSE 事件：plan 之后、answer_delta 之前发；按 source 去重；保留 score 最低那条；`snippet ≤ 240` 字 | `backend/kb_qa_agent/api/chat.py:_build_sources_event()` |
+| P4-6 | ✅ | 真流式 prompt 注入：system prompt 强制 `[i]` 角标 + 末尾「## 参考资料」段；`MAX_RAG_HITS_INTO_PROMPT = 4` | `backend/kb_qa_agent/api/chat.py:_real_stream_answer()` |
+| P4-7 | ✅ | `specs/chunking.spec.md` 新增；`specs/chat.spec.md` §4/§5/§6 加入 `sources` 事件契约 | `specs/{chunking,chat}.spec.md` |
+| P4-8 | 🚧 | 前端 sources chip 渲染（计划在 P4-frontend 批做） | `frontend/src/components/ChatPanel.tsx`、`hooks/useChatStream.ts`、`types/chat.ts` |
+| P4-9 | ✅ | 真实政策文档 10 份入仓（hr×2 / finance×2 / it×2 / legal×3）；`data/knowledge_base/` 提交策略写进 CLAUDE.md | `data/knowledge_base/`、`CLAUDE.md` |
+| P4-10 | ✅ | 测试：3 套新测试（`test_chunking` / `test_ingest_idempotent` / `test_chat_with_citations`）共 414 行 | `backend/tests/test_*.py` |
+
+**验收**：
+- 同 source 二次 `add_documents()` → collection 中 chunk 总量恒定（`test_same_doc_re_ingest_does_not_grow`）
+- 改 source 内容 → 旧 chunk 全部清理（`test_changed_content_replaces_old_chunks`）
+- 切片携带 `heading_path`，检索 hit 的 metadata 可还原 `[i] source#heading`（`test_metadata_includes_heading_path_and_doc_hash`）
+- `_real_stream_answer` 的 user_prompt 包含「政策片段」段 + 角标规则（`test_rag_hits_inject_into_real_stream_prompt`）
+- `eval/bootstrap_kb` 输出 `files=new/updated/skipped/chunks_added` 四件套
+
+---
+
 ## 关联文档
 
 - `specs/chat.spec.md` — `/v1/chat` SSE 协议规范（P0 锁协议）

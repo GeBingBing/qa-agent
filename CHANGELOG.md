@@ -7,6 +7,17 @@ versions follow [SemVer](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+- **后端**：`core/chunking.py` markdown-aware 切分器（H1/H2/H3 节 + code fence 保留 + frontmatter 剥离 + 超长 sliding window），`ChunkPiece` 携带 `heading_path`
+- **后端**：`RAG.add_documents` 改走 `chunk_markdown`；id = `sha1(source+text+chunk)[:16]`；metadata 写入 `heading_path / doc_hash / ingested_at / embedding_model / embedding_provider`
+- **后端**：摄取幂等 —— 同 source 二次写入先 `delete(where={source})` 后 add，chunk 总量恒定
+- **后端**：`eval/bootstrap_kb` 重写 —— 递归 `rglob('*.md')`、`--reset` / `--json` 标志、frontmatter 解析、`new / updated / skipped / chunks_added` 真实统计
+- **后端**：`sources` SSE 事件 —— plan 之后、answer_delta 之前发出，按 source 去重（保留 score 最低），`snippet ≤ 240` 字，含 `id / source / heading_path / score / snippet` 五字段
+- **后端**：真流式 prompt 注入 —— `_real_stream_answer` system prompt 强制要求模型使用 `[i]` 角标并在末尾追加「## 参考资料」段；最多注入 4 条命中（`MAX_RAG_HITS_INTO_PROMPT`）
+- **数据**：`data/knowledge_base/` 入仓真实政策文档 10 份（hr×2 / finance×2 / it×2 / legal×3 + frontmatter）
+- **文档**：`specs/chunking.spec.md` 新增（10 段：用途 / API / 输入 / 输出 / 不变量 / 错误模式 / 边界 / 性能 / 范围 / 依赖）
+- **文档**：`specs/chat.spec.md` §4 / §5 / §6 加入 `sources` 事件契约（不变量 I8：plan 之后、首个 answer_delta 之前）
+- **文档**：`docs/IMPROVEMENT_ROADMAP.md` 加入 P4 段（10 条改造项）
+- **测试**：`test_chunking.py` / `test_ingest_idempotent.py` / `test_chat_with_citations.py` 三套新测试，16 用例
 - **后端**：`/v1/chat` SSE 协议正式化（事件序列、不变量、错误模式见 `specs/chat.spec.md`）
 - **后端**：API Bearer 鉴权 (`KB_QA_API_TOKEN`)，未设置则放行；`/health` `/metrics` 公开
 - **后端**：`/health/ready` 真实探测 active provider 可用性

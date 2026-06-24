@@ -49,6 +49,24 @@
 - **日志**：`logging.getLogger("kb_qa_agent.<submodule>")`，不用 `print`
 - **配置**：所有可调参数走 `SETTINGS.yaml` 或 `.env`，不硬编码
 
+## Skills 与 `skills-lock.json`
+
+- `backend/kb_qa_agent/skills/` 是**项目运行时** skills（4 业务 + 6 Agently），由 `skill_loader.py` 加载；**已 commit**，fresh clone 即用
+- `.claude/skills/` 是 **Claude Code skill 系统** 的本地副本（同名 5 个 agently-*），**已 commit**
+- 根目录 `skills-lock.json` 是 Claude Code 的版本指纹 manifest，`source` 字段指向首次安装时的本地路径（如 `/tmp/agently-skills`），**仅做 hash 校验**，不影响项目运行
+- 重新生成 `skills-lock.json`：`/plugin marketplace update` 或手动重装
+
+## 知识库治理（`data/knowledge_base/`）
+
+- **目录结构**：`{hr,finance,it,legal,general}/<doc>.md`；外层目录名即 domain 兜底
+- **frontmatter（可选）**：YAML；缺字段时 `eval/bootstrap_kb` 按外层目录补 `domain`、按文件名补 `source` / `doc_id`
+- **id 幂等**：chunk id = `sha1(source + doc_hash + chunk_index + chunk_text)[:16]`；同 source 二次写入先 delete 后 add，collection 总量恒定
+- **提交策略**：当前 10 份是脱敏后的样例政策，**可以入 git**；如未来加入真实业务政策（含 PII），必须先脱敏并改用 git-lfs 或迁移到独立仓库
+- **不要做的事**：
+  - 不要把含员工姓名 / 工号 / 薪资 / 病假诊断的政策文档直接 commit
+  - 不要在 `data/chroma/` 持久化目录 commit（已在 `.gitignore`）
+  - 不要绕过 `eval/bootstrap_kb` 直接调 `RAG.add_documents`（幂等 + 统计会失效）
+
 ## 常见陷阱（之前踩过的坑）
 
 1. **JSON 不支持下划线数字字面量**：`5_000_000` 在 Python 里合法，在 JSON 里会报错。`data/mock_db/*.json` 必须用 `5000000`
