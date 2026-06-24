@@ -26,7 +26,7 @@ jobs:
       - name: Ruff
         run: uv run ruff check backend
       - name: Pytest
-        run: uv run pytest backend/tests -q --maxfail=1 --cov=kb_qa_agent --cov-report=term-missing --cov-fail-under=60
+        run: uv run pytest backend/tests -q --maxfail=1 --cov=kb_qa_agent --cov-report=term-missing --cov-fail-under=75
 
   frontend:
     name: frontend (eslint + tsc + vite build)
