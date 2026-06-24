@@ -9,6 +9,7 @@ export interface ChatMessage {
   // 流式中间状态
   intake?: IntakeEvent
   plan?: PlanEvent
+  sources?: Source[]
   steps?: StepEvent[]
   risk?: RiskEvent
   reflection?: ReflectionEvent
@@ -43,6 +44,14 @@ export interface PlanEvent {
   blocked_skills: any[]
 }
 
+export interface Source {
+  id: number                  // 1-based，按 score 升序
+  source: string              // 文件名（如 leave_policy.md）
+  heading_path: string        // "/" 分隔的章节路径（如 "年假/申请流程"）
+  score: number               // 检索距离；越小越相关
+  snippet: string             // ≤ 240 字的内容片段
+}
+
 export interface StepEvent {
   id: string
   kind: 'llm' | 'tool' | 'human'
@@ -70,6 +79,7 @@ export interface StreamEvent {
     | 'start'
     | 'intake'
     | 'plan'
+    | 'sources'
     | 'step_start'
     | 'step_result'
     | 'risk'

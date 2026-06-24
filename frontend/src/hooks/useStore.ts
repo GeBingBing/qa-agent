@@ -2,7 +2,7 @@
 
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import type { ChatMessage, IntakeEvent, PlanEvent, RiskEvent, ReflectionEvent, StepEvent, Domain } from '@/types/chat'
+import type { ChatMessage, IntakeEvent, PlanEvent, RiskEvent, ReflectionEvent, Source, StepEvent, Domain } from '@/types/chat'
 
 function genId(prefix: 'u' | 'a'): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -24,6 +24,7 @@ interface ChatState {
   finalizeAssistantThinking: (id: string) => void
   setAssistantIntake: (id: string, intake: IntakeEvent) => void
   setAssistantPlan: (id: string, plan: PlanEvent) => void
+  setAssistantSources: (id: string, sources: Source[]) => void
   addAssistantStep: (id: string, step: StepEvent) => void
   updateAssistantStep: (id: string, stepId: string, patch: Partial<StepEvent>) => void
   setAssistantSteps: (id: string, steps: StepEvent[]) => void
@@ -98,6 +99,12 @@ export const useChatStore = create<ChatState>()(
       setAssistantPlan: (id, plan) => {
         set((s) => ({
           messages: s.messages.map((m) => (m.id === id ? { ...m, plan } : m)),
+        }))
+      },
+
+      setAssistantSources: (id, sources) => {
+        set((s) => ({
+          messages: s.messages.map((m) => (m.id === id ? { ...m, sources } : m)),
         }))
       },
 

@@ -8,6 +8,7 @@ import { useChatStream } from '@/hooks/useChatStream'
 import { TracePanel } from './TracePanel'
 import { ThinkingPanel } from './ThinkingPanel'
 import { SkillList } from './SkillList'
+import { SourcesChips } from './SourcesChips'
 import { DomainBadge } from './DomainBadge'
 import { Button } from './ui/button'
 import { CopyButton, ActionButton } from './MessageActions'
@@ -139,6 +140,10 @@ export function ChatPanel() {
               )}
 
               {m.role === 'assistant' && <TracePanel message={m} />}
+
+              {m.role === 'assistant' && m.sources && m.sources.length > 0 && (
+                <SourcesChips sources={m.sources} />
+              )}
 
               {m.role === 'assistant' && (m.thinking || m.thinkingActive) && (
                 <ThinkingPanel

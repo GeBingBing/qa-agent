@@ -14,6 +14,7 @@ export function useChatStream() {
     finalizeAssistantThinking,
     setAssistantIntake,
     setAssistantPlan,
+    setAssistantSources,
     addAssistantStep,
     updateAssistantStep,
     setAssistantRisk,
@@ -46,6 +47,9 @@ export function useChatStream() {
             break
           case 'plan':
             setAssistantPlan(aid, evt.data)
+            break
+          case 'sources':
+            if (Array.isArray(evt.data)) setAssistantSources(aid, evt.data)
             break
           case 'step_start':
             addAssistantStep(aid, {
