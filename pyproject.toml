@@ -40,7 +40,7 @@ dependencies = [
     "chromadb>=0.5",
     "onnxruntime<1.23; sys_platform == 'darwin' and platform_machine == 'x86_64'",
     "torch<2.3; sys_platform == 'darwin' and platform_machine == 'x86_64'",
-    "sentence-transformers>=2.7",      # 本地 embedding (bge-small-zh)
+    "sentence-transformers>=2.7,<4",  # 本地 embedding (bge-small-zh)；<4 避免 transformers 5.x + accelerate 缺失的 NameError
     "tiktoken>=0.7",
 
     # MCP
@@ -76,7 +76,7 @@ eval = [
 # ---------- Project layout ----------
 [tool.setuptools.packages.find]
 where = ["backend"]
-include = ["kb_qa_agent*"]
+include = ["kb_qa_agent*", "kb_qa_agent.eval*"]
 
 # ---------- Tooling ----------
 [tool.ruff]

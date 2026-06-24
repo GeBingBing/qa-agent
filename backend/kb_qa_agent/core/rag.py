@@ -4,18 +4,22 @@
   - 单 collection：kb_policies
   - embedding：本地 sentence-transformers (BAAI/bge-small-zh-v1.5)
     或 OpenAI text-embedding-3-small（可切）
-  - chunk_size / overlap 简单按字符切；生产可换 markdown-aware splitter
+  - 切分走 markdown-aware (`core/chunking.py`)，保留 heading_path
+  - 摄取幂等：id = sha1(source + text)，重写前先按 source 删旧 chunk
 """
 
 from __future__ import annotations
 
+import hashlib
 import os
+import time
 from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from ..config import get_config
+from .chunking import chunk_markdown
 
 
 @dataclass
@@ -77,21 +81,57 @@ class RAG:
 
     # ---------- ingest ----------
     def add_documents(self, docs: Iterable[tuple[str, dict[str, Any]]]) -> int:
-        """docs: iterable of (text, metadata). 自动切分 + 写入 collection."""
+        """docs: iterable of (raw_markdown_text, metadata)。
+
+        语义：
+          - 同 source 二次写入 → 先 delete(where={"source": ...}) 再 add，幂等
+          - chunk id = sha1(source + chunk_text)[:16]，与位置无关
+          - metadata 写入 heading_path / doc_hash / ingested_at /
+            embedding_model / embedding_provider，便于审计与脏数据排查
+          - 切分走 chunk_markdown（保留章节结构）；缺 frontmatter 也兼容
+        """
         self._ensure_client()
         self._ensure_embed_fn()
 
-        ids, texts, metadatas = [], [], []
-        for idx, (text, metadata) in enumerate(docs):
-            chunks = chunk_text(text, chunk_size=500, overlap=80)
-            for j, chunk in enumerate(chunks):
-                ids.append(f"doc-{idx}-{j}")
-                texts.append(chunk)
-                m = dict(metadata or {})
-                m["chunk_index"] = j
-                m["char_len"] = len(chunk)
+        ids: list[str] = []
+        texts: list[str] = []
+        metadatas: list[dict[str, Any]] = []
+        sources_to_clear: set[str] = set()
+        ingested_at = int(time.time())
+
+        for text, metadata in docs:
+            metadata = dict(metadata or {})
+            source = str(metadata.get("source") or metadata.get("doc_id") or "")
+            if source:
+                sources_to_clear.add(source)
+            doc_hash = hashlib.sha1(text.encode("utf-8")).hexdigest()[:16]
+            pieces = chunk_markdown(text, max_chars=600, min_chars=100, overlap_chars=80)
+            for j, piece in enumerate(pieces):
+                cid_base = f"{source or 'inline'}::{doc_hash}::{j}::{piece.text}"
+                cid = hashlib.sha1(cid_base.encode("utf-8")).hexdigest()[:16]
+                ids.append(cid)
+                texts.append(piece.text)
+                m = dict(metadata)
+                m.update({
+                    "chunk_index": j,
+                    "char_len": piece.char_len,
+                    "heading_path": "/".join(piece.heading_path) if piece.heading_path else "",
+                    "doc_hash": doc_hash,
+                    "ingested_at": ingested_at,
+                    "embedding_model": self._embedding_model,
+                    "embedding_provider": self._embedding_provider,
+                })
                 metadatas.append(m)
-        self._collection_obj.add(ids=ids, documents=texts, metadatas=metadatas)
+
+        # 幂等：先按 source 清理旧 chunk
+        for src in sources_to_clear:
+            try:
+                self._collection_obj.delete(where={"source": src})
+            except Exception:  # noqa: BLE001 — 兼容某些 chroma 版本对 empty where 的差异
+                pass
+
+        if ids:
+            self._collection_obj.add(ids=ids, documents=texts, metadatas=metadatas)
         return len(ids)
 
     # ---------- query ----------
