@@ -82,7 +82,7 @@ class BashSandbox:
 
 ## 7. 边界情况
 
-- **超长输出**：当前没有 stdout/stderr 大小限制；TODO: 加 16MB 上限
+- **超长输出**：stdout+stderr 合计超过 `max_output_bytes`（默认 16 MiB）时**截断已读到的内容**并把 `SandboxResult.truncated` 置 True，附 `[... truncated: output exceeded N bytes ...]` 标记；进程仍在写则一并 kill
 - **二进制输出**：UTF-8 解码失败时用 `errors="replace"`，不会爆栈
 - **管道命令**：白名单只校验首 token，所以 `python3 script.py | head` 会通过；想限管道需自行扩展
 - **shell 注入**：`asyncio.create_subprocess_shell` 走 `bash -c '<command>'`，命令本身在 workdir 内执行，但**没有**chroot——能 `cat /etc/passwd`。这是已知非生产级限制

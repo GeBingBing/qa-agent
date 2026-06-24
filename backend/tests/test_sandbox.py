@@ -131,3 +131,32 @@ def test_invalid_timeout_falls_back_to_15(tmp_path: Path, monkeypatch):
     # 即便 SETTINGS 里写错或没填，也应得到合法 int
     assert isinstance(sb.timeout, int)
     assert sb.timeout > 0
+
+
+# ---------------------------------------------------------------------------
+# 输出大小上限
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_output_capped_at_max_bytes(tmp_path: Path):
+    """stdout 超过 max_output_bytes 时被截断 + 标记 truncation。"""
+    sb = BashSandbox(
+        workdir=str(tmp_path),
+        allowed_cmd_prefixes=["python3"],
+        timeout=10,
+        max_output_bytes=64 * 1024,  # 64KB 上限，命令会输出 200KB
+    )
+    r = await sb.run("python3 -c 'print(\"A\" * (200 * 1024))'")
+    # stdout 应被截断到 ≤ max_output_bytes（外加截断标记尾部）
+    assert len(r.stdout.encode("utf-8")) <= 64 * 1024 + 256
+    assert r.truncated is True
+    # 截断时可能带 kill：exit_code 既可能 0（已 exit），也可能 <0（被 kill）
+    assert r.exit_code <= 0
+
+
+@pytest.mark.asyncio
+async def test_default_max_output_is_16mb(tmp_path: Path):
+    """默认 max_output_bytes = 16 * 1024 * 1024。"""
+    sb = BashSandbox(workdir=str(tmp_path), allowed_cmd_prefixes=["ls"], timeout=5)
+    assert sb.max_output_bytes == 16 * 1024 * 1024
