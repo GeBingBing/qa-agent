@@ -37,8 +37,11 @@ class RAG:
         rag_cfg = cfg.get("rag", {}) or {}
         self._persist_dir = rag_cfg.get("chroma", {}).get("persist_dir", "./data/chroma")
         self._collection = rag_cfg.get("chroma", {}).get("collection", "kb_policies")
-        self._embedding_provider = rag_cfg.get("embedding", {}).get("provider", "local")
-        self._embedding_model = rag_cfg.get("embedding", {}).get("model", "BAAI/bge-small-zh-v1.5")
+        # 配置层用 ${ENV.EMBEDDING_PROVIDER} 占位符，env 未设时回退到空串；
+        # 这里再兜一次：空 provider 等同于未配置 → 默认 local。
+        provider = rag_cfg.get("embedding", {}).get("provider") or "local"
+        self._embedding_provider = provider
+        self._embedding_model = rag_cfg.get("embedding", {}).get("model") or "BAAI/bge-small-zh-v1.5"
         self._client = None
         self._collection_obj = None
         self._embed_fn = None
