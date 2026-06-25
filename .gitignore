@@ -76,7 +76,12 @@ logs/
 
 # ===== Project-specific =====
 # Local data (ChromaDB persistence, trace dumps)
+# 注意：backend/data/ 与 data/ 是两个不同的目录。
+# - data/knowledge_base/ 与 data/mock_db/ 是 git 跟踪的源数据
+# - data/chroma/ 是 ChromaDB 持久化目录（运行期产物）
+# - backend/data/ 是 backend 私有工作目录（sandbox workdir + chroma 持久化备份）
 data/chroma/
+backend/data/
 .traces/
 .cost/
 .cache/
