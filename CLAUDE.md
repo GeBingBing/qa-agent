@@ -76,6 +76,8 @@
 5. **Sandbox timeout 空字符串**：`SETTINGS.yaml` 的 `${ENV.KB_QA_SANDBOX_TIMEOUT}` 在 env 未设置时变 `""`，`int("")` 会爆。`BashSandbox.__init__` 已加 try/except fallback 到 15
 6. **Agently 4.x API**：`get_async_generator(type=..., specific=...)` 是当前流式调用方式；`response.get_response()` 仍可用但流式优先用 generator
 7. **Provider 切换**：改 `KB_QA_ACTIVE_PROVIDER` 后**必须重启** uvicorn，因为 Agently settings 是进程级单例
+8. **`${ENV.X}` 占位符 ≠ 默认值**：`SETTINGS.yaml` 里 `${ENV.CHROMA_COLLECTION}` / `${ENV.EMBEDDING_PROVIDER}` 等占位符在 env 未设置时**解析为空字符串**，不是 None；下游 `dict.get(key, default)` 拿不到默认。读取配置时必须用 `value or default` 兜底（见 `core/rag.py` 的 4 个字段）
+9. **测试要模拟 CI 环境**：本地 `.env` 有变量时 `RAG()` 拿到的是 set 后的值，CI 没加载 `.env`，配置层行为不同。涉及 `${ENV.*}` 字段的测试，CI 跑前必须 `env -u VAR` 跑一遍，或在 fixture 里 `monkeypatch.delenv(...)` + `reset_config_cache()`
 
 ## 目录速查（找代码）
 
