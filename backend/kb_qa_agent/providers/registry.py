@@ -2,6 +2,10 @@
 
 业务层用 `get_provider("deepseek")` / `list_available()` 拿到实例，
 不需要关心它是 OpenAI 兼容还是 Anthropic。
+
+启动顺序：providers/__init__.py 在 import 第一时间 load_dotenv() + 构造 registry，
+保证 OpenAICompatProvider.__init__ 读 os.environ 时已拿到 API key。
+测试场景用 reset_registry_for_tests() 强制重建。
 """
 
 from __future__ import annotations
@@ -76,3 +80,10 @@ def active_provider() -> tuple[str, BaseProvider]:
     if name not in PROVIDER_REGISTRY:
         raise KeyError(f"KB_QA_ACTIVE_PROVIDER={name!r} not in registry; available: {sorted(PROVIDER_REGISTRY)}")
     return name, PROVIDER_REGISTRY[name]
+
+
+def reset_registry_for_tests() -> None:
+    """测试钩子：清空缓存，让下次 get_provider 重新构造实例。"""
+    global PROVIDER_REGISTRY
+    PROVIDER_REGISTRY.clear()
+    PROVIDER_REGISTRY.update(_build_registry())
