@@ -38,12 +38,55 @@
         "subprocessors_require_consent": true,
         "data_subject_request_sla_days": 30
       }
+    },
+    {
+      "id": "C004",
+      "title": "Salesforce CRM 服务协议",
+      "counterparty": "Salesforce, Inc.",
+      "signed_date": "2025-06-01",
+      "expiry_date": "2027-05-31",
+      "tags": ["SaaS", "CRM", "客户数据", "跨境"],
+      "key_clauses": {
+        "data_residency": "境外（美国）",
+        "transfer_mechanism": "SCCs",
+        "termination_notice_days": 60,
+        "subprocessors_disclosed": true,
+        "data_subject_request_sla_days": 30
+      }
+    },
+    {
+      "id": "C005",
+      "title": "外部法律顾问服务协议",
+      "counterparty": "中伦律师事务所",
+      "signed_date": "2025-03-01",
+      "expiry_date": "2026-12-31",
+      "tags": ["法律服务", "诉讼支持"],
+      "key_clauses": {
+        "hourly_rate_cny_partner": 3500,
+        "hourly_rate_cny_associate": 1800,
+        "scope": "商事诉讼、合规咨询、跨境数据"
+      }
+    },
+    {
+      "id": "C006",
+      "title": "员工保密协议（NDA）模板 v2",
+      "counterparty": "内部模板",
+      "signed_date": "2024-01-01",
+      "expiry_date": null,
+      "tags": ["劳动", "保密"],
+      "key_clauses": {
+        "duration_years_after_termination": 3,
+        "covers_trade_secrets": true,
+        "non_compete_months": 0
+      }
     }
   ],
   "regulations": [
     {"id": "R001", "name": "个人信息保护法 (PIPL)", "effective_date": "2021-11-01", "scope": "所有处理中国境内自然人个人信息的主体"},
     {"id": "R002", "name": "GDPR (欧盟通用数据保护条例)", "effective_date": "2018-05-25", "scope": "欧盟数据主体"},
     {"id": "R003", "name": "网络安全法", "effective_date": "2017-06-01", "scope": "境内网络运营者"},
-    {"id": "R004", "name": "数据安全法", "effective_date": "2021-09-01", "scope": "境内数据处理活动"}
+    {"id": "R004", "name": "数据安全法", "effective_date": "2021-09-01", "scope": "境内数据处理活动"},
+    {"id": "R005", "name": "CCPA / CPRA (加州)", "effective_date": "2023-01-01", "scope": "加州居民相关业务"},
+    {"id": "R006", "name": "巴西 LGPD", "effective_date": "2020-09-18", "scope": "巴西数据主体"}
   ]
 }

@@ -29,11 +29,57 @@
       "annual_leave_remaining_days": 5,
       "sick_leave_used_days": 2,
       "join_date": "2018-06-20"
+    },
+    "E004": {
+      "name": "赵六",
+      "department": "engineering",
+      "manager": "M001",
+      "annual_leave_quota_days": 12,
+      "annual_leave_used_days": 7,
+      "annual_leave_remaining_days": 5,
+      "sick_leave_used_days": 3,
+      "join_date": "2024-01-10"
+    },
+    "E005": {
+      "name": "孙七",
+      "department": "legal",
+      "manager": "M004",
+      "annual_leave_quota_days": 18,
+      "annual_leave_used_days": 0,
+      "annual_leave_remaining_days": 18,
+      "sick_leave_used_days": 0,
+      "join_date": "2020-11-05"
+    },
+    "E006": {
+      "name": "周八",
+      "department": "hr",
+      "manager": "M005",
+      "annual_leave_quota_days": 15,
+      "annual_leave_used_days": 10,
+      "annual_leave_remaining_days": 5,
+      "sick_leave_used_days": 0,
+      "join_date": "2019-04-22"
     }
   },
   "leave_requests": [
     {"id": "L001", "employee_id": "E001", "type": "annual", "from": "2026-06-20", "to": "2026-06-22", "days": 3, "status": "approved"},
     {"id": "L002", "employee_id": "E002", "type": "sick", "from": "2026-05-10", "to": "2026-05-10", "days": 1, "status": "approved"},
-    {"id": "L003", "employee_id": "E003", "type": "annual", "from": "2026-07-01", "to": "2026-07-10", "days": 8, "status": "pending"}
+    {"id": "L003", "employee_id": "E003", "type": "annual", "from": "2026-07-01", "to": "2026-07-10", "days": 8, "status": "pending"},
+    {"id": "L004", "employee_id": "E004", "type": "annual", "from": "2026-08-05", "to": "2026-08-09", "days": 5, "status": "pending"},
+    {"id": "L005", "employee_id": "E005", "type": "annual", "from": "2026-09-15", "to": "2026-09-26", "days": 10, "status": "pending"},
+    {"id": "L006", "employee_id": "E001", "type": "sick", "from": "2026-04-08", "to": "2026-04-09", "days": 2, "status": "approved"},
+    {"id": "L007", "employee_id": "E006", "type": "annual", "from": "2026-07-20", "to": "2026-07-31", "days": 10, "status": "rejected", "reason": "项目关键期，部门负责人驳回"}
+  ],
+  "attendance_policies": {
+    "work_hours": "9:30-18:30 (周一至周五)",
+    "late_threshold_minutes": 15,
+    "monthly_late_tolerance": 3,
+    "remote_work_quota_per_month": 4,
+    "overtime_requires_approval": true
+  },
+  "attendance_summary": [
+    {"employee_id": "E001", "month": "2026-05", "late_days": 0, "absent_days": 0, "remote_days": 2},
+    {"employee_id": "E002", "month": "2026-05", "late_days": 1, "absent_days": 1, "remote_days": 1},
+    {"employee_id": "E004", "month": "2026-05", "late_days": 4, "absent_days": 0, "remote_days": 0, "warning": "迟到次数超标"}
   ]
 }

@@ -1,17 +1,25 @@
 {
   "accounts": {
-    "E001": {"vpn_access": true, "aws_console_access": "readonly", "github_role": "developer", "last_login": "2026-06-13"},
-    "E002": {"vpn_access": true, "aws_console_access": "none",      "github_role": "viewer",     "last_login": "2026-06-10"},
-    "E003": {"vpn_access": true, "aws_console_access": "admin",    "github_role": "maintainer", "last_login": "2026-06-15"}
+    "E001": {"vpn_access": true, "aws_console_access": "readonly", "github_role": "developer", "last_login": "2026-06-13", "mfa_enabled": true},
+    "E002": {"vpn_access": true, "aws_console_access": "none",      "github_role": "viewer",     "last_login": "2026-06-10", "mfa_enabled": true},
+    "E003": {"vpn_access": true, "aws_console_access": "admin",    "github_role": "maintainer", "last_login": "2026-06-15", "mfa_enabled": true},
+    "E004": {"vpn_access": true, "aws_console_access": "readonly", "github_role": "developer", "last_login": "2026-06-14", "mfa_enabled": true},
+    "E005": {"vpn_access": false, "aws_console_access": "none",    "github_role": "none",      "last_login": "2026-06-08", "mfa_enabled": false, "note": "法务岗不需要 VPN；账号近期登录较少"},
+    "E006": {"vpn_access": true, "aws_console_access": "none",    "github_role": "viewer",    "last_login": "2026-06-12", "mfa_enabled": true}
   },
   "tickets": [
     {"id": "T001", "title": "VPN 偶尔断连", "reporter": "E001", "priority": "low", "status": "open",       "created": "2026-06-10"},
     {"id": "T002", "title": "申请 AWS dev 权限", "reporter": "E002", "priority": "medium", "status": "in_progress", "created": "2026-06-08"},
-    {"id": "T003", "title": "工位笔记本蓝屏", "reporter": "E003", "priority": "high", "status": "resolved",  "created": "2026-06-05"}
+    {"id": "T003", "title": "工位笔记本蓝屏", "reporter": "E003", "priority": "high", "status": "resolved",  "created": "2026-06-05"},
+    {"id": "T004", "title": "申请 Figma 编辑权限", "reporter": "E004", "priority": "low",  "status": "open",       "created": "2026-06-15"},
+    {"id": "T005", "title": "生产数据库慢查询", "reporter": "E003", "priority": "high", "status": "in_progress", "created": "2026-06-14"},
+    {"id": "T006", "title": "邮件签名同步", "reporter": "E006", "priority": "low",  "status": "resolved",    "created": "2026-06-09"}
   ],
   "system_status": {
-    "vpn_gateway":   {"status": "operational", "last_incident": "2026-04-12"},
-    "email":         {"status": "operational", "last_incident": "2026-05-20"},
-    "internal_wiki": {"status": "degraded",    "last_incident": "2026-06-14"}
+    "vpn_gateway":      {"status": "operational", "last_incident": "2026-04-12", "uptime_pct_30d": 99.95},
+    "email":            {"status": "operational", "last_incident": "2026-05-20", "uptime_pct_30d": 99.99},
+    "internal_wiki":    {"status": "degraded",    "last_incident": "2026-06-14", "note": "搜索功能响应慢，研发已介入"},
+    "production_db":    {"status": "operational", "last_incident": "2026-06-14", "note": "T005 慢查询已加索引"},
+    "monitoring_stack": {"status": "operational", "last_incident": "2026-03-10", "uptime_pct_30d": 99.99}
   }
 }

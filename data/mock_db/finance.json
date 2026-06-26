@@ -21,16 +21,28 @@
       "monthly_cap_cny": 500,
       "approval_threshold_cny": 1500,
       "notes": "月度预算 500 元/人；超过 1500 元需走 IT 资产采购流程。"
+    },
+    "training": {
+      "category": "培训",
+      "annual_cap_cny": 8000,
+      "approval_threshold_cny": 5000,
+      "notes": "含课程费、差旅、住宿；需提前 14 天提交培训申请。"
     }
   },
   "budgets": {
     "engineering": {"fy2026_total_cny": 5000000, "used_cny": 1250000, "remaining_cny": 3750000},
     "marketing":    {"fy2026_total_cny": 3000000, "used_cny": 1800000, "remaining_cny": 1200000},
-    "finance":      {"fy2026_total_cny": 800000,  "used_cny": 120000,  "remaining_cny": 680000}
+    "finance":      {"fy2026_total_cny": 800000,  "used_cny": 120000,  "remaining_cny": 680000},
+    "legal":        {"fy2026_total_cny": 600000,  "used_cny": 320000,  "remaining_cny": 280000},
+    "hr":           {"fy2026_total_cny": 900000,  "used_cny": 410000,  "remaining_cny": 490000},
+    "operations":   {"fy2026_total_cny": 1500000, "used_cny": 670000,  "remaining_cny": 830000}
   },
   "payments": [
     {"id": "P001", "vendor": "AWS 中国", "amount_cny": 184320, "status": "paid", "date": "2026-04-30"},
     {"id": "P002", "vendor": "JetBrains", "amount_cny": 12800, "status": "pending", "date": "2026-06-12"},
-    {"id": "P003", "vendor": "高铁购票", "amount_cny": 3450, "status": "paid", "date": "2026-05-22"}
+    {"id": "P003", "vendor": "高铁购票", "amount_cny": 3450, "status": "paid", "date": "2026-05-22"},
+    {"id": "P004", "vendor": "差旅酒店", "amount_cny": 9200, "status": "paid", "date": "2026-05-30"},
+    {"id": "P005", "vendor": "AWS 国际", "amount_cny": 1200000, "status": "pending", "date": "2026-06-18"},
+    {"id": "P006", "vendor": "员工聚餐", "amount_cny": 4500, "status": "rejected", "date": "2026-06-10", "reason": "超额未提前申请"}
   ]
 }
